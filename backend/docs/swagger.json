@@ -1,0 +1,50 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/rates": {
+            "get": {
+                "description": "Returns all stored exchange rates",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rates"
+                ],
+                "summary": "Get all exchange rates",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Rate"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Rate": {
+            "type": "object",
+            "properties": {
+                "base_currency": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "rate": {
+                    "type": "number"
+                },
+                "target_currency": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

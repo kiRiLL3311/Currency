@@ -1,0 +1,31 @@
+definitions:
+  models.Rate:
+    properties:
+      base_currency:
+        type: string
+      id:
+        type: integer
+      rate:
+        type: number
+      target_currency:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /rates:
+    get:
+      description: Returns all stored exchange rates
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Rate'
+            type: array
+      summary: Get all exchange rates
+      tags:
+      - Rates
+swagger: "2.0"
