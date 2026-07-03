@@ -1,13 +1,15 @@
 package main
 
 import (
-	_ "Currency/backend/docs"
-	"Currency/backend/internal/config"
-	"Currency/backend/internal/db"
-	"Currency/backend/internal/handlers"
-	"Currency/backend/internal/repository"
-	"Currency/backend/internal/services"
 	"net/http"
+
+	"github.com/kiRiLL3311/Currency/backend/internal/config"
+	"github.com/kiRiLL3311/Currency/backend/internal/db"
+	"github.com/kiRiLL3311/Currency/backend/internal/handlers"
+	"github.com/kiRiLL3311/Currency/backend/internal/repository"
+	"github.com/kiRiLL3311/Currency/backend/internal/services"
+
+	_ "github.com/kiRiLL3311/Currency/backend/docs"
 
 	chi "github.com/go-chi/chi/v5"
 	httpSwagger "github.com/swaggo/http-swagger"

@@ -1,8 +1,9 @@
 package services
 
 import (
-	"Currency/backend/internal/client"
-	"Currency/backend/internal/models"
+	"github.com/kiRiLL3311/Currency/backend/internal/models"
+
+	"github.com/kiRiLL3311/Currency/backend/internal/client"
 )
 
 type RateRepository interface {

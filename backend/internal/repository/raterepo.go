@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"Currency/backend/internal/models"
 	"database/sql"
+
+	"github.com/kiRiLL3311/Currency/backend/internal/models"
 )
 
 type RateRepository struct {
@@ -44,17 +45,29 @@ func (r *RateRepository) GetAll() ([]models.Rate, error) {
 	return rates, nil
 }
 
-func (r *RateRepository) GetRate(from, to string) (float64, error) {
+// func (r *RateRepository) GetRate(from, to string) (float64, error) {
+// 	var rate float64
+
+// 	err := r.DB.QueryRow(
+// 		`SELECT rate
+// 		 FROM rates
+// 		 WHERE base_currency = $1
+// 		   AND target_currency = $2`,
+// 		from,
+// 		to,
+// 	).Scan(&rate)
+
+//		return rate, err
+//	}
+func (r *RateRepository) GetRate(base, target string) (float64, error) {
 	var rate float64
 
-	err := r.DB.QueryRow(
-		`SELECT rate
-		 FROM rates
-		 WHERE base_currency = $1
-		   AND target_currency = $2`,
-		from,
-		to,
-	).Scan(&rate)
+	err := r.DB.QueryRow(`
+		SELECT rate
+		FROM rates
+		WHERE base_currency = $1
+		  AND target_currency = $2
+	`, base, target).Scan(&rate)
 
 	return rate, err
 }

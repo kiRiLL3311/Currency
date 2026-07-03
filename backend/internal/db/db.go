@@ -1,10 +1,11 @@
 package db
 
 import (
-	"Currency/backend/internal/config"
 	"database/sql"
 	"fmt"
 	"log"
+
+	"github.com/kiRiLL3311/Currency/backend/internal/config"
 
 	_ "github.com/lib/pq"
 )

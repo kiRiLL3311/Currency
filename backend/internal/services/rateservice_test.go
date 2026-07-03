@@ -1,9 +1,10 @@
 package services
 
 import (
-	"Currency/backend/internal/models"
 	"fmt"
 	"testing"
+
+	"github.com/kiRiLL3311/Currency/backend/internal/models"
 )
 
 type MockRepo struct{}

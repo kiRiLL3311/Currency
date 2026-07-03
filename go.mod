@@ -1,4 +1,4 @@
-module Currency
+module github.com/kiRiLL3311/Currency
 
 go 1.25.0
 

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"Currency/backend/internal/services"
+	"github.com/kiRiLL3311/Currency/backend/internal/services"
 )
 
 type RateHandler struct {
