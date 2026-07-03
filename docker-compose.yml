@@ -1,7 +1,33 @@
+# services:
+#   db:
+#     image: postgres:15
+
+#     restart: always
+#     environment:
+#       POSTGRES_USER: app
+#       POSTGRES_PASSWORD: app
+#       POSTGRES_DB: currency
+#     ports:
+#       - "5433:5432"
+#     volumes:
+#       - pgdata:/var/lib/postgresql/data
+
+#   app:
+#     build:
+#       context: .
+#       dockerfile: backend/Dockerfile
+#     depends_on:
+#       - db
+#     ports:
+#       - "8080:8080"
+#     env_file:
+#       - backend/.env
+
+# volumes:
+#   pgdata:
 services:
   db:
     image: postgres:15
-
     restart: always
     environment:
       POSTGRES_USER: app
@@ -23,5 +49,46 @@ services:
     env_file:
       - backend/.env
 
+  auth:
+    build:
+      context: .
+      dockerfile: auth/Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "8081:8080"
+    env_file:
+      - auth/.env
+
+  migrate-backend:
+    image: migrate/migrate
+    depends_on:
+      - db
+    volumes:
+      - ./backend/migrations:/migrations
+    command:
+      [
+        "-path", "/migrations",
+        "-database",
+        "postgres://app:app@db:5432/currency?sslmode=disable",
+        "up"
+      ]
+
+  migrate-auth:
+    image: migrate/migrate
+    depends_on:
+      - db
+    volumes:
+      - ./auth/migrations:/migrations
+    command:
+      [
+        "-path", "/migrations",
+        "-database",
+        "postgres://app:app@db:5432/currency?sslmode=disable",
+        "up"
+      ]
+
 volumes:
   pgdata:
+  
+
