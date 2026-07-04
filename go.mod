@@ -10,6 +10,8 @@ require (
 	github.com/swaggo/swag v1.16.6
 )
 
+require github.com/golang-jwt/jwt/v5 v5.3.1
+
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect

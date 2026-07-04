@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/kiRiLL3311/Currency/backend/internal/middleware"
 	"github.com/kiRiLL3311/Currency/backend/internal/services"
 )
 
@@ -20,6 +22,15 @@ type RateHandler struct {
 // @Success 200 {array} models.Rate
 // @Router /rates [get]
 func (h *RateHandler) GetRates(w http.ResponseWriter, r *http.Request) {
+
+	userID, ok := r.Context().Value(middleware.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	log.Printf("Request from user %d", userID)
+
 	rates, err := h.Service.GetRates()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -31,6 +42,15 @@ func (h *RateHandler) GetRates(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *RateHandler) Convert(w http.ResponseWriter, r *http.Request) {
+
+	userID, ok := r.Context().Value(middleware.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	log.Printf("Conversion requested by user %d", userID)
+
 	from := r.URL.Query().Get("from")
 	to := r.URL.Query().Get("to")
 	amountStr := r.URL.Query().Get("amount")
@@ -60,6 +80,7 @@ func (h *RateHandler) Convert(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *RateHandler) SyncRates(w http.ResponseWriter, r *http.Request) {
+
 	base := r.URL.Query().Get("base")
 	if base == "" {
 		base = "USD"
