@@ -84,3 +84,7 @@ func (s *AuthService) Login(req models.LoginRequest) (string, error) {
 
 	return token, nil
 }
+
+func (s *AuthService) Me(userID int) (*models.User, error) {
+	return s.Repo.GetByID(userID)
+}

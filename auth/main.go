@@ -8,6 +8,7 @@ import (
 	"github.com/kiRiLL3311/Currency/auth/internal/config"
 	"github.com/kiRiLL3311/Currency/auth/internal/db"
 	"github.com/kiRiLL3311/Currency/auth/internal/handlers"
+	"github.com/kiRiLL3311/Currency/auth/internal/middleware"
 	"github.com/kiRiLL3311/Currency/auth/internal/repository"
 	"github.com/kiRiLL3311/Currency/auth/internal/services"
 )
@@ -37,5 +38,12 @@ func main() {
 	r.Post("/register", handler.Register)
 	r.Post("/login", handler.Login)
 
+	r.Group(func(r chi.Router) {
+
+		r.Use(middleware.JWT)
+
+		r.Get("/me", handler.Me)
+
+	})
 	http.ListenAndServe(":8080", r)
 }

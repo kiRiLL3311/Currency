@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/kiRiLL3311/Currency/auth/internal/middleware"
 	"github.com/kiRiLL3311/Currency/auth/internal/models"
 	"github.com/kiRiLL3311/Currency/auth/internal/services"
 )
@@ -68,4 +69,27 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{
 		"token": token,
 	})
+}
+
+func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
+
+	userID, ok := r.Context().Value(middleware.UserIDKey).(int)
+
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	user, err := h.Service.Me(userID)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	user.PasswordHash = ""
+
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(user)
 }
