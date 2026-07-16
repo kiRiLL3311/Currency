@@ -59,16 +59,15 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.Service.Login(req)
+	tokens, err := h.Service.Login(req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
-		"token": token,
-	})
+
+	json.NewEncoder(w).Encode(tokens)
 }
 
 func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {

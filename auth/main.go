@@ -20,9 +20,13 @@ func main() {
 	database := db.Connect()
 	defer database.Close()
 
-	repo := repository.NewUserRepository(database)
+	userRepo := repository.NewUserRepository(database)
 
-	service := services.NewAuthService(repo)
+	refreshRepo := repository.NewRefreshTokenRepository(database)
+	service := services.NewAuthService(
+		userRepo,
+		refreshRepo,
+	)
 
 	handler := &handlers.AuthHandler{
 		Service: service,
@@ -45,5 +49,6 @@ func main() {
 		r.Get("/me", handler.Me)
 
 	})
+
 	http.ListenAndServe(":8080", r)
 }

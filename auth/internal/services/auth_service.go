@@ -10,12 +10,23 @@ import (
 )
 
 type AuthService struct {
-	Repo *repository.UserRepository
+	Repo        *repository.UserRepository
+	RefreshRepo *repository.RefreshTokenRepository
 }
 
-func NewAuthService(repo *repository.UserRepository) *AuthService {
+//	func NewAuthService(repo *repository.UserRepository) *AuthService {
+//		return &AuthService{
+//			Repo: repo,
+//		}
+//	}
+func NewAuthService(
+	repo *repository.UserRepository,
+	refreshRepo *repository.RefreshTokenRepository,
+) *AuthService {
+
 	return &AuthService{
-		Repo: repo,
+		Repo:        repo,
+		RefreshRepo: refreshRepo,
 	}
 }
 
@@ -61,11 +72,34 @@ func (s *AuthService) Register(req models.RegisterRequest) error {
 // Returns the user if they match.
 
 // Returns the same error for both "email not found" and "wrong password", which is a common security practice because it doesn't reveal which part was incorrect.
-func (s *AuthService) Login(req models.LoginRequest) (string, error) {
+// func (s *AuthService) Login(req models.LoginRequest) (*models.AuthResponse, error) {
+
+// 	user, err := s.Repo.GetUserByEmail(req.Email)
+// 	if err != nil {
+// 		return "", errors.New("invalid email or password")
+// 	}
+
+// 	err = bcrypt.CompareHashAndPassword(
+// 		[]byte(user.PasswordHash),
+// 		[]byte(req.Password),
+// 	)
+
+// 	if err != nil {
+// 		return "", errors.New("invalid email or password")
+// 	}
+
+// 	token, err := GenerateJWT(user.ID, user.Email)
+// 	if err != nil {
+// 		return "", err
+// 	}
+
+//		return token, nil
+//	}
+func (s *AuthService) Login(req models.LoginRequest) (*models.AuthResponse, error) {
 
 	user, err := s.Repo.GetUserByEmail(req.Email)
 	if err != nil {
-		return "", errors.New("invalid email or password")
+		return nil, errors.New("invalid email or password")
 	}
 
 	err = bcrypt.CompareHashAndPassword(
@@ -74,15 +108,36 @@ func (s *AuthService) Login(req models.LoginRequest) (string, error) {
 	)
 
 	if err != nil {
-		return "", errors.New("invalid email or password")
+		return nil, errors.New("invalid email or password")
 	}
 
-	token, err := GenerateJWT(user.ID, user.Email)
+	// Generate short-lived access token
+	accessToken, err := GenerateJWT(user.ID, user.Email)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return token, nil
+	// Generate refresh token
+	refreshToken, err := GenerateRefreshToken()
+	if err != nil {
+		return nil, err
+	}
+
+	// Store refresh token in database
+	err = s.RefreshRepo.Create(
+		user.ID,
+		refreshToken,
+		RefreshExpiry(),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.AuthResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
 }
 
 func (s *AuthService) Me(userID int) (*models.User, error) {
