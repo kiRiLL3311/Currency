@@ -1,13 +1,13 @@
-FROM golang:1.25
+FROM golang:1.24
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
+COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
-COPY . .
+COPY backend/ .
 
-RUN go build -o server ./backend
+RUN go build -o server .
 
 EXPOSE 8080
 
