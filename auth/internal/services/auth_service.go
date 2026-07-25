@@ -140,6 +140,69 @@ func (s *AuthService) Login(req models.LoginRequest) (*models.AuthResponse, erro
 	}, nil
 }
 
+// Refresh exchanges a valid refresh token for a new access + refresh token pair.
+// The old refresh token is deleted (rotation) so it cannot be reused.
+func (s *AuthService) Refresh(refreshToken string) (*models.AuthResponse, error) {
+	if strings.TrimSpace(refreshToken) == "" {
+		return nil, errors.New("refresh token required")
+	}
+
+	userID, err := s.RefreshRepo.GetByToken(refreshToken)
+	if err != nil {
+		return nil, errors.New("invalid or expired refresh token")
+	}
+
+	user, err := s.Repo.GetByID(userID)
+	if err != nil {
+		return nil, errors.New("invalid or expired refresh token")
+	}
+
+	// Rotate: invalidate the presented refresh token before issuing a new one.
+	if err := s.RefreshRepo.Delete(refreshToken); err != nil {
+		return nil, err
+	}
+
+	accessToken, err := GenerateJWT(user.ID, user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	newRefreshToken, err := GenerateRefreshToken()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := s.RefreshRepo.Create(user.ID, newRefreshToken, RefreshExpiry()); err != nil {
+		return nil, err
+	}
+
+	return &models.AuthResponse{
+		AccessToken:  accessToken,
+		RefreshToken: newRefreshToken,
+	}, nil
+}
+
 func (s *AuthService) Me(userID int) (*models.User, error) {
+	return s.Repo.GetByID(userID)
+}
+
+var allowedRegions = map[string]bool{
+	"US": true,
+	"EU": true,
+	"GB": true,
+	"JP": true,
+	"AU": true,
+}
+
+func (s *AuthService) UpdateProfile(userID int, req models.UpdateProfileRequest) (*models.User, error) {
+	region := strings.TrimSpace(strings.ToUpper(req.Region))
+	if region == "" || !allowedRegions[region] {
+		return nil, errors.New("invalid region")
+	}
+
+	if err := s.Repo.UpdateRegion(userID, region); err != nil {
+		return nil, err
+	}
+
 	return s.Repo.GetByID(userID)
 }

@@ -28,7 +28,7 @@ func (m *MockRepo) GetAll() ([]models.Rate, error) {
 	return []models.Rate{}, nil
 }
 
-func (m *MockRepo) SaveRate(from, to string, rate float64) error {
+func (m *MockRepo) SaveRate(from, to string, rate float64, previousRate *float64) error {
 	return nil
 }
 

@@ -17,9 +17,14 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 }
 
 func (r *UserRepository) CreateUser(user *models.User) error {
+	region := user.Region
+	if region == "" {
+		region = "US"
+	}
+
 	query := `
-	INSERT INTO users(username,email,password_hash)
-	VALUES($1,$2,$3)
+	INSERT INTO users(username,email,password_hash,region)
+	VALUES($1,$2,$3,$4)
 	`
 
 	_, err := r.DB.Exec(
@@ -27,6 +32,7 @@ func (r *UserRepository) CreateUser(user *models.User) error {
 		user.Username,
 		user.Email,
 		user.PasswordHash,
+		region,
 	)
 
 	return err
@@ -34,7 +40,7 @@ func (r *UserRepository) CreateUser(user *models.User) error {
 
 func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 	query := `
-		SELECT id, username, email, password_hash, created_at
+		SELECT id, username, email, password_hash, region, created_at
 		FROM users
 		WHERE email = $1
 	`
@@ -46,6 +52,7 @@ func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 		&user.Username,
 		&user.Email,
 		&user.PasswordHash,
+		&user.Region,
 		&user.CreatedAt,
 	)
 
@@ -56,10 +63,9 @@ func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
-// return user info
 func (r *UserRepository) GetByID(id int) (*models.User, error) {
 	query := `
-	SELECT id, username, email, password_hash, created_at
+	SELECT id, username, email, password_hash, region, created_at
 	FROM users
 	WHERE id = $1
 	`
@@ -71,6 +77,7 @@ func (r *UserRepository) GetByID(id int) (*models.User, error) {
 		&user.Username,
 		&user.Email,
 		&user.PasswordHash,
+		&user.Region,
 		&user.CreatedAt,
 	)
 
@@ -79,4 +86,13 @@ func (r *UserRepository) GetByID(id int) (*models.User, error) {
 	}
 
 	return user, nil
+}
+
+func (r *UserRepository) UpdateRegion(id int, region string) error {
+	_, err := r.DB.Exec(`
+		UPDATE users
+		SET region = $1
+		WHERE id = $2
+	`, region, id)
+	return err
 }

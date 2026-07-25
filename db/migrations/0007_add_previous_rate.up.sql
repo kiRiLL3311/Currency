@@ -1,0 +1,2 @@
+ALTER TABLE rates
+    ADD COLUMN IF NOT EXISTS previous_rate DECIMAL(20, 8);

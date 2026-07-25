@@ -125,6 +125,17 @@ services:
     env_file:
       - auth/.env
 
+  news:
+    build:
+      context: .
+      dockerfile: news/Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "8082:8080"
+    env_file:
+      - news/.env
+
   migrate:
     image: migrate/migrate
     depends_on:

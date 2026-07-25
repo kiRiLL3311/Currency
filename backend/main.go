@@ -87,11 +87,15 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-// @title Currency API
+// @title FOREX Rates API
 // @version 1.0
-// @description Currency conversion service.
+// @description Currency rates and converter microservice.
 // @host localhost:8080
 // @BasePath /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description JWT access token. Example: Bearer <token>
 func main() {
 	// Load environment variables
 	config.LoadEnv()
