@@ -2,11 +2,12 @@ package main
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
 
-	_ "github.com/kiRiLL3311/Currency/auth/docs"
+	"github.com/kiRiLL3311/Currency/auth/docs"
 	"github.com/kiRiLL3311/Currency/auth/internal/config"
 	"github.com/kiRiLL3311/Currency/auth/internal/db"
 	"github.com/kiRiLL3311/Currency/auth/internal/handlers"
@@ -27,6 +28,7 @@ import (
 func main() {
 
 	config.LoadEnv()
+	configureSwagger()
 
 	database := db.Connect()
 	defer database.Close()
@@ -65,4 +67,17 @@ func main() {
 	})
 
 	http.ListenAndServe(":8080", r)
+}
+
+func configureSwagger() {
+	// Empty host => Swagger UI uses the browser host (e.g. converterplus.cc).
+	docs.SwaggerInfo.Host = config.Get("SWAGGER_HOST")
+	if base := strings.TrimSpace(config.Get("SWAGGER_BASE_PATH")); base != "" {
+		docs.SwaggerInfo.BasePath = base
+	}
+	if schemes := strings.TrimSpace(config.Get("SWAGGER_SCHEMES")); schemes != "" {
+		docs.SwaggerInfo.Schemes = strings.Split(schemes, ",")
+	} else if docs.SwaggerInfo.Host == "" {
+		docs.SwaggerInfo.Schemes = []string{"https", "http"}
+	}
 }

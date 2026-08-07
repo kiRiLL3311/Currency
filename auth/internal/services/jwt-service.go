@@ -1,27 +1,4 @@
-// package services
 
-// import (
-// 	"time"
-
-// 	"github.com/golang-jwt/jwt/v5"
-// 	"github.com/kiRiLL3311/Currency/auth/internal/config"
-// )
-
-// func GenerateJWT(userID int, email string) (string, error) {
-
-// 	claims := Claims{
-// 		UserID: userID,
-// 		Email:  email,
-// 		RegisteredClaims: jwt.RegisteredClaims{
-// 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
-// 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-// 		},
-// 	}
-
-// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-//		return token.SignedString([]byte(config.Get("JWT_SECRET")))
-//	}
 package services
 
 import (

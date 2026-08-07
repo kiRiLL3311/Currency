@@ -14,11 +14,6 @@ type AuthService struct {
 	RefreshRepo *repository.RefreshTokenRepository
 }
 
-//	func NewAuthService(repo *repository.UserRepository) *AuthService {
-//		return &AuthService{
-//			Repo: repo,
-//		}
-//	}
 func NewAuthService(
 	repo *repository.UserRepository,
 	refreshRepo *repository.RefreshTokenRepository,
